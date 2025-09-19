@@ -1,0 +1,41 @@
+# vitamin_checker.py
+
+def check_vitamin_deficiency(symptoms):
+    symptom_map = {
+        "fatigue": ["Vitamin D", "Vitamin B12"],
+        "muscle weakness": ["Vitamin D"],
+        "bleeding gums": ["Vitamin C"],
+        "bruising": ["Vitamin C"],
+        "numbness": ["Vitamin B12"],
+        "tingling": ["Vitamin B12"],
+        "hair loss": ["Vitamin B7"],
+        "skin issues": ["Vitamin B7"],
+        "night blindness": ["Vitamin A"],
+        "bone pain": ["Vitamin D"],
+        "muscle cramps": ["Vitamin D", "Calcium"],
+        "slow healing": ["Vitamin C"],
+        "depression": ["Vitamin B6", "Vitamin B12"],
+        "confusion": ["Vitamin B6", "Vitamin B12"],
+    }
+
+    deficiencies = []
+
+    for symptom in symptoms:
+        symptom = symptom.lower().strip()
+        if symptom in symptom_map:
+            deficiencies.extend(symptom_map[symptom])
+
+    if deficiencies:
+        unique_deficiencies = set(deficiencies)
+        return f"\n🔍 Vitamin Checker Output:\nYou may have a deficiency in: {', '.join(unique_deficiencies)}"
+    else:
+        return "\n🔍 Vitamin Checker Output:\nNo matching vitamin deficiency found for the given symptoms."
+
+# Sample input for testing
+if __name__ == "__main__":
+    print("Welcome to the Vitamin Deficiency Checker!")
+    print("Enter your symptoms (comma-separated):")
+    user_input = input("> ")
+    symptoms_list = user_input.split(",")
+    result = check_vitamin_deficiency(symptoms_list)
+    print(result)
