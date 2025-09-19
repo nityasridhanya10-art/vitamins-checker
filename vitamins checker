@@ -1,41 +1,145 @@
-# vitamin_checker.py
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vitamin Deficiency Checker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Vitamin Deficiency Checker</h1>
+    
+    <div class="input-area">
+      <input type="text" id="symptomInput" placeholder="Enter a symptom (e.g., fatigue)">
+      <button onclick="addSymptom()">Add Symptom</button>
+    </div>
 
-def check_vitamin_deficiency(symptoms):
-    symptom_map = {
-        "fatigue": ["Vitamin D", "Vitamin B12"],
-        "muscle weakness": ["Vitamin D"],
-        "bleeding gums": ["Vitamin C"],
-        "bruising": ["Vitamin C"],
-        "numbness": ["Vitamin B12"],
-        "tingling": ["Vitamin B12"],
-        "hair loss": ["Vitamin B7"],
-        "skin issues": ["Vitamin B7"],
-        "night blindness": ["Vitamin A"],
-        "bone pain": ["Vitamin D"],
-        "muscle cramps": ["Vitamin D", "Calcium"],
-        "slow healing": ["Vitamin C"],
-        "depression": ["Vitamin B6", "Vitamin B12"],
-        "confusion": ["Vitamin B6", "Vitamin B12"],
+    <div id="symptomList">
+      <h3>Symptoms:</h3>
+      <ul id="symptomsUl"></ul>
+    </div>
+
+    <button onclick="checkDeficiency()" id="checkButton">Check Deficiency</button>
+
+    <div id="results">
+      <h3>Possible Vitamin Deficiencies:</h3>
+      <ul id="resultsUl"></ul>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 600px;
+  background: white;
+  margin: auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.input-area {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 15px;
+  font-size: 16px;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0059c1;
+}
+
+#symptomList ul,
+#results ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+const symptoms = [];
+
+function addSymptom() {
+  const input = document.getElementById('symptomInput');
+  const symptom = input.value.trim().toLowerCase();
+
+  if (symptom && !symptoms.includes(symptom)) {
+    symptoms.push(symptom);
+    updateSymptomList();
+    input.value = '';
+  }
+}
+
+function updateSymptomList() {
+  const list = document.getElementById('symptomsUl');
+  list.innerHTML = '';
+  symptoms.forEach(s => {
+    const li = document.createElement('li');
+    li.textContent = s;
+    list.appendChild(li);
+  });
+}
+
+function checkDeficiency() {
+  const symptomMap = {
+    'fatigue': ['Vitamin B12', 'Iron', 'Vitamin D'],
+    'hair loss': ['Biotin', 'Zinc', 'Iron'],
+    'muscle weakness': ['Vitamin D', 'Magnesium'],
+    'bleeding gums': ['Vitamin C'],
+    'night blindness': ['Vitamin A'],
+    'dry skin': ['Vitamin A', 'Vitamin E'],
+    'numbness': ['Vitamin B12', 'Vitamin B1'],
+    'slow wound healing': ['Vitamin C', 'Zinc'],
+    'depression': ['Vitamin D', 'Vitamin B6', 'Vitamin B12'],
+    'brittle nails': ['Biotin'],
+  };
+
+  const deficiencyCount = {};
+
+  symptoms.forEach(symptom => {
+    const vitamins = symptomMap[symptom];
+    if (vitamins) {
+      vitamins.forEach(vitamin => {
+        deficiencyCount[vitamin] = (deficiencyCount[vitamin] || 0) + 1;
+      });
     }
+  });
 
-    deficiencies = []
+  const sortedDeficiencies = Object.entries(deficiencyCount)
+    .sort((a, b) => b[1] - a[1]);
 
-    for symptom in symptoms:
-        symptom = symptom.lower().strip()
-        if symptom in symptom_map:
-            deficiencies.extend(symptom_map[symptom])
+  const resultUl = document.getElementById('resultsUl');
+  resultUl.innerHTML = '';
 
-    if deficiencies:
-        unique_deficiencies = set(deficiencies)
-        return f"\n🔍 Vitamin Checker Output:\nYou may have a deficiency in: {', '.join(unique_deficiencies)}"
-    else:
-        return "\n🔍 Vitamin Checker Output:\nNo matching vitamin deficiency found for the given symptoms."
+  if (sortedDeficiencies.length === 0) {
+    resultUl.innerHTML = '<li>No deficiencies matched the symptoms.</li>';
+    return;
+  }
 
-# Sample input for testing
-if __name__ == "__main__":
-    print("Welcome to the Vitamin Deficiency Checker!")
-    print("Enter your symptoms (comma-separated):")
-    user_input = input("> ")
-    symptoms_list = user_input.split(",")
-    result = check_vitamin_deficiency(symptoms_list)
-    print(result)
+  sortedDeficiencies.forEach(([vitamin, count]) => {
+    const li = document.createElement('li');
+    li.textContent = `${vitamin} (matched ${count} symptom${count > 1 ? 's' : ''})`;
+    resultUl.appendChild(li);
+  });
+}
